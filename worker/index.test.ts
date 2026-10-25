@@ -35,6 +35,19 @@ test('private routes deny unauthenticated requests', async () => {
   }
 })
 
+test('private overview fails closed when its read credential is absent', async () => {
+  const sessions = new Map<string, string>()
+  const env = configuredEnv()
+  env.SESSION_STORE = { put: async () => {}, delete: async () => {}, get: async (key: string) => sessions.get(key) ?? null }
+  const session = 'a'.repeat(64)
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(session))
+  const key = `session:${btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')}`
+  sessions.set(key, '12345')
+  const response = await worker.fetch(new Request('https://preview.example.workers.dev/api/private/overview', { headers: { Cookie: `mission_session=${session}` } }), env)
+  assert.equal(response.status, 503)
+  assert.equal(await response.text(), JSON.stringify({ error: 'Private data unavailable' }))
+})
+
 test('authentication routes fail closed when not configured', async () => {
   const env = configuredEnv()
   env.GITHUB_CLIENT_SECRET = ''

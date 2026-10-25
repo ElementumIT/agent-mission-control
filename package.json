@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "build:cloudflare": "vite build --mode cloudflare",
     "lint": "oxlint",
-    "test": "node --experimental-strip-types --test src/data/publicSnapshot.test.ts worker/index.test.ts scripts/public-snapshot-collector.test.mjs",
+    "test": "node --experimental-strip-types --test src/data/publicSnapshot.test.ts worker/index.test.ts worker/privateOverview.test.ts scripts/public-snapshot-collector.test.mjs",
     "collect:snapshot": "node --experimental-strip-types scripts/collect-public-snapshot.mjs",
     "preview": "vite preview"
   },
