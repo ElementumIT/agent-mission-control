@@ -47,6 +47,17 @@ test('callback rejects missing state and code', async () => {
   assert.equal(response.status, 400)
 })
 
+test('logout accepts only a same-origin form post', async () => {
+  const env = configuredEnv()
+  const getResponse = await worker.fetch(new Request('https://preview.example.workers.dev/logout'), env)
+  assert.equal(getResponse.status, 405)
+  const postResponse = await worker.fetch(new Request('https://preview.example.workers.dev/logout', {
+    method: 'POST', headers: { Origin: 'https://preview.example.workers.dev' },
+  }), env)
+  assert.equal(postResponse.status, 303)
+  assert.equal(postResponse.headers.get('Location'), 'https://preview.example.workers.dev/')
+})
+
 test('login redirects with an OAuth state cookie', async () => {
   const response = await worker.fetch(new Request('https://preview.example.workers.dev/login'), configuredEnv())
   assert.equal(response.status, 302)
