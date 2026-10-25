@@ -10,7 +10,11 @@
   "kv_namespaces": [
     {
       "binding": "PUBLIC_SNAPSHOT",
-      "id": "REPLACE_WITH_CLOUDFLARE_KV_NAMESPACE_ID"
+      "id": "REPLACE_WITH_PUBLIC_SNAPSHOT_KV_NAMESPACE_ID"
+    },
+    {
+      "binding": "SESSION_STORE",
+      "id": "REPLACE_WITH_PRIVATE_SESSION_KV_NAMESPACE_ID"
     }
   ]
 }
