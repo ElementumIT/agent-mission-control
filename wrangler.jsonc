@@ -1,0 +1,20 @@
+{
+  "name": "agent-mission-control",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-25",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "kv_namespaces": [
+    {
+      "binding": "PUBLIC_SNAPSHOT",
+      "id": "REPLACE_WITH_PUBLIC_SNAPSHOT_KV_NAMESPACE_ID"
+    },
+    {
+      "binding": "SESSION_STORE",
+      "id": "REPLACE_WITH_PRIVATE_SESSION_KV_NAMESPACE_ID"
+    }
+  ]
+}
