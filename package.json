@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "build:cloudflare": "CLOUDFLARE_BUILD=1 vite build",
     "lint": "oxlint",
-    "test": "node --experimental-strip-types --test worker/index.test.ts",
+    "test": "node --experimental-strip-types --test src/data/publicSnapshot.test.ts worker/index.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {
