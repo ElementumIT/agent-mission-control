@@ -4,11 +4,10 @@ import './index.css'
 import App from './App.tsx'
 import PublicSummary from './PublicSummary.tsx'
 import PrivateLogout from './PrivateLogout.tsx'
+import PrivateDashboard from './PrivateDashboard.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PublicSummary />
-    <PrivateLogout />
-    <App />
+    {window.location.pathname.startsWith('/app') ? <><PrivateLogout /><PrivateDashboard /></> : <><PublicSummary /><App /></>}
   </StrictMode>,
 )
