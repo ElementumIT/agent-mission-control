@@ -30,4 +30,4 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_KV_WRITE_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_PUBLIC_SNAPSHOT_KV_NAMESPACE_ID }}
-        run: npx --yes wrangler@latest kv key put current --namespace-id "$CLOUDFLARE_KV_NAMESPACE_ID" --remote --path snapshot.json
+        run: npx wrangler kv key put current --namespace-id "$CLOUDFLARE_KV_NAMESPACE_ID" --remote --path snapshot.json
