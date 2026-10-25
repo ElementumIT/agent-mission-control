@@ -7,6 +7,7 @@ export interface OAuthEnv {
   GITHUB_CLIENT_SECRET: string
   GITHUB_ALLOWED_USER_IDS: string
   SESSION_SECRET: string
+  PUBLIC_ORIGIN: string
   SESSION_STORE: {
     put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>
     get(key: string): Promise<string | null>
@@ -34,7 +35,7 @@ async function sha256(value: string): Promise<string> {
 export async function login(request: Request, env: OAuthEnv): Promise<Response> {
   const state = randomToken()
   const verifier = randomToken() + randomToken()
-  const callback = new URL('/auth/callback', request.url).toString()
+  const callback = new URL('/auth/callback', env.PUBLIC_ORIGIN).toString()
   await env.SESSION_STORE.put(`oauth:${state}`, JSON.stringify({ verifier, callback }), { expirationTtl: 600 })
   const params = new URLSearchParams({
     client_id: env.GITHUB_CLIENT_ID, redirect_uri: callback, state,
@@ -79,7 +80,7 @@ export async function callback(request: Request, env: OAuthEnv): Promise<Respons
   const sessionId = randomToken()
   // Store only verified identity; never retain the OAuth access token.
   await env.SESSION_STORE.put(`session:${await sha256(sessionId)}`, String(user.id), { expirationTtl: 28800 })
-  const response = Response.redirect(new URL('/app', request.url).toString(), 302)
+  const response = Response.redirect(new URL('/app', env.PUBLIC_ORIGIN).toString(), 302)
   response.headers.append('Set-Cookie', cookie('oauth_state', '', 0))
   response.headers.append('Set-Cookie', cookie('mission_session', sessionId, 28800))
   response.headers.set('Cache-Control', 'no-store')
@@ -99,7 +100,7 @@ export async function logout(request: Request, env: OAuthEnv): Promise<Response>
   if (session && /^[a-f0-9]{64}$/.test(session)) {
     await env.SESSION_STORE.delete(`session:${await sha256(session)}`)
   }
-  const response = Response.redirect(new URL('/', request.url).toString(), 303)
+  const response = Response.redirect(new URL('/', env.PUBLIC_ORIGIN).toString(), 303)
   response.headers.set('Set-Cookie', cookie('mission_session', '', 0))
   response.headers.set('Cache-Control', 'no-store')
   return response
