@@ -10,11 +10,11 @@
   "kv_namespaces": [
     {
       "binding": "PUBLIC_SNAPSHOT",
-      "id": "REPLACE_WITH_PUBLIC_SNAPSHOT_KV_NAMESPACE_ID"
+      "id": "f9ce1665c3b949e59c4a442b4562d157"
     },
     {
       "binding": "SESSION_STORE",
-      "id": "REPLACE_WITH_PRIVATE_SESSION_KV_NAMESPACE_ID"
+      "id": "be481e32c6bf4dcf8759dd6743bd1c47"
     }
   ]
 }

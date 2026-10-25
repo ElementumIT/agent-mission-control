@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:cloudflare": "CLOUDFLARE_BUILD=1 vite build",
+    "build:cloudflare": "vite build --mode cloudflare",
     "lint": "oxlint",
     "test": "node --experimental-strip-types --test src/data/publicSnapshot.test.ts worker/index.test.ts",
     "preview": "vite preview"
