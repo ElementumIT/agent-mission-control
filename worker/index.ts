@@ -18,7 +18,7 @@ const json = (body: unknown, status: number, cacheControl = 'no-store') =>
   })
 
 const isConfigured = (env: Env) =>
-  Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.GITHUB_ALLOWED_USER_IDS && env.SESSION_STORE && env.PUBLIC_ORIGIN && new URL(env.PUBLIC_ORIGIN).origin === new URL(env.PUBLIC_ORIGIN).toString().replace(/\/$/, ''))
+  Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.GITHUB_ALLOWED_USER_IDS && env.SESSION_STORE && env.PUBLIC_ORIGIN)
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
