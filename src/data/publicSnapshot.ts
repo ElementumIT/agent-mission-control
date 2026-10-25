@@ -46,8 +46,14 @@ const hasExactKeys = (value: Record<string, unknown>, keys: readonly string[]) =
 const isNonNegativeInteger = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
 
-const isIsoTimestamp = (value: unknown): value is string =>
-  typeof value === 'string' && !Number.isNaN(Date.parse(value)) && value.endsWith('Z')
+const isIsoTimestamp = (value: unknown): value is string => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
+    return false
+  }
+
+  const parsed = new Date(value)
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString() === value
+}
 
 /**
  * Validate untrusted JSON before returning it from the public API.
