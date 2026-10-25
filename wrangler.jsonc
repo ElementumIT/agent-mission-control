@@ -1,0 +1,26 @@
+{
+  "name": "agent-mission-control",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-25",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "PUBLIC_SNAPSHOT",
+      "id": "f9ce1665c3b949e59c4a442b4562d157"
+    },
+    {
+      "binding": "SESSION_STORE",
+      "id": "be481e32c6bf4dcf8759dd6743bd1c47"
+    }
+  ]
+}
