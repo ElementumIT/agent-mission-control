@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { validatePublicSnapshot } from './publicSnapshot.ts'
+import { fetchPublicSnapshot, validatePublicSnapshot } from './publicSnapshot.ts'
 
 const validSnapshot = () => ({
   schemaVersion: 1,
@@ -54,4 +54,9 @@ test('rejects negative, fractional, unsafe, and nonnumeric counts', () => {
   assertInvalid((snapshot) => {
     ;(snapshot.taskCounts as Record<string, unknown>).inProgress = 1.5
   })
+})
+
+test('fetches only a validated public snapshot', async () => {
+  const snapshot = await fetchPublicSnapshot('/api/public/snapshot', async () => new Response(JSON.stringify(validSnapshot())))
+  assert.deepEqual(snapshot, validSnapshot())
 })
