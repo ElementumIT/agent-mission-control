@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-mission-control.pages.dev/schemas/public-snapshot.v1.json",
+  "title": "Agent Mission Control public snapshot",
+  "description": "Allowlisted aggregate data only. Private GitHub records must never be serialized into this payload.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "registeredAgentCount", "taskCounts"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "generatedAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "registeredAgentCount": { "type": "integer", "minimum": 0 },
+    "taskCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pending", "inProgress", "completed"],
+      "properties": {
+        "pending": { "type": "integer", "minimum": 0 },
+        "inProgress": { "type": "integer", "minimum": 0 },
+        "completed": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
