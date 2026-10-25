@@ -26,6 +26,11 @@ const cookie = (name: string, value: string, maxAge: number) =>
   `${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`
 const parseCookie = (request: Request, name: string) =>
   request.headers.get('Cookie')?.split(';').map((x) => x.trim()).find((x) => x.startsWith(`${name}=`))?.slice(name.length + 1)
+const redirect = (location: string, status: 302 | 303, cookies: string[] = []) => {
+  const headers = new Headers({ Location: location, 'Cache-Control': 'no-store' })
+  for (const value of cookies) headers.append('Set-Cookie', value)
+  return new Response(null, { status, headers })
+}
 
 async function sha256(value: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', encoder.encode(value))
@@ -41,10 +46,7 @@ export async function login(request: Request, env: OAuthEnv): Promise<Response> 
     client_id: env.GITHUB_CLIENT_ID, redirect_uri: callback, state,
     code_challenge: await sha256(verifier), code_challenge_method: 'S256',
   })
-  const response = Response.redirect(`https://github.com/login/oauth/authorize?${params}`, 302)
-  response.headers.set('Set-Cookie', cookie('oauth_state', state, 600))
-  response.headers.set('Cache-Control', 'no-store')
-  return response
+  return redirect(`https://github.com/login/oauth/authorize?${params}`, 302, [cookie('oauth_state', state, 600)])
 }
 
 export async function callback(request: Request, env: OAuthEnv): Promise<Response> {
@@ -80,11 +82,10 @@ export async function callback(request: Request, env: OAuthEnv): Promise<Respons
   const sessionId = randomToken()
   // Store only verified identity; never retain the OAuth access token.
   await env.SESSION_STORE.put(`session:${await sha256(sessionId)}`, String(user.id), { expirationTtl: 28800 })
-  const response = Response.redirect(new URL('/app', env.PUBLIC_ORIGIN).toString(), 302)
-  response.headers.append('Set-Cookie', cookie('oauth_state', '', 0))
-  response.headers.append('Set-Cookie', cookie('mission_session', sessionId, 28800))
-  response.headers.set('Cache-Control', 'no-store')
-  return response
+  return redirect(new URL('/app', env.PUBLIC_ORIGIN).toString(), 302, [
+    cookie('oauth_state', '', 0),
+    cookie('mission_session', sessionId, 28800),
+  ])
 }
 
 export async function authorizedUser(request: Request, env: OAuthEnv): Promise<string | null> {
@@ -100,8 +101,5 @@ export async function logout(request: Request, env: OAuthEnv): Promise<Response>
   if (session && /^[a-f0-9]{64}$/.test(session)) {
     await env.SESSION_STORE.delete(`session:${await sha256(session)}`)
   }
-  const response = Response.redirect(new URL('/', env.PUBLIC_ORIGIN).toString(), 303)
-  response.headers.set('Set-Cookie', cookie('mission_session', '', 0))
-  response.headers.set('Cache-Control', 'no-store')
-  return response
+  return redirect(new URL('/', env.PUBLIC_ORIGIN).toString(), 303, [cookie('mission_session', '', 0)])
 }

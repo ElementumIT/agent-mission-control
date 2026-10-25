@@ -46,3 +46,11 @@ test('callback rejects missing state and code', async () => {
   const response = await worker.fetch(new Request('https://preview.example.workers.dev/auth/callback'), configuredEnv())
   assert.equal(response.status, 400)
 })
+
+test('login redirects with an OAuth state cookie', async () => {
+  const response = await worker.fetch(new Request('https://preview.example.workers.dev/login'), configuredEnv())
+  assert.equal(response.status, 302)
+  assert.match(response.headers.get('Location') ?? '', /^https:\/\/github\.com\/login\/oauth\/authorize\?/)
+  assert.match(response.headers.get('Set-Cookie') ?? '', /^oauth_state=[a-f0-9]{64};/)
+  assert.equal(response.headers.get('Cache-Control'), 'no-store')
+})
