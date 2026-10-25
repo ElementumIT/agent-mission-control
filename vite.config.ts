@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/agent-mission-control/',
+  // Keep GitHub Pages' subpath build by default; Cloudflare uses the root path.
+  base: process.env.CLOUDFLARE_BUILD === '1' ? '/' : '/agent-mission-control/',
   plugins: [react()],
 })

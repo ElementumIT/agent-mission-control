@@ -1,6 +1,6 @@
-import { validatePublicSnapshot } from '../src/data/publicSnapshot'
-import { login, callback, authorizedUser, logout } from './auth'
-import type { OAuthEnv } from './auth'
+import { validatePublicSnapshot } from '../src/data/publicSnapshot.ts'
+import { login, callback, authorizedUser, logout } from './auth.ts'
+import type { OAuthEnv } from './auth.ts'
 
 interface Env extends OAuthEnv {
   ASSETS: { fetch(request: Request): Promise<Response> }
