@@ -18,12 +18,16 @@ const json = (body: unknown, status: number, cacheControl = 'no-store') =>
   })
 
 const isConfigured = (env: Env) =>
-  Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.GITHUB_ALLOWED_USER_IDS && env.SESSION_STORE)
+  Boolean(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET && env.GITHUB_ALLOWED_USER_IDS && env.SESSION_STORE && env.PUBLIC_ORIGIN && new URL(env.PUBLIC_ORIGIN).origin === new URL(env.PUBLIC_ORIGIN).toString().replace(/\/$/, ''))
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
     const path = url.pathname
+    // Reject forged Host headers and unapproved origins on authentication routes.
+    if ((path === '/login' || path === '/auth/callback' || path === '/logout') && (!env.PUBLIC_ORIGIN || url.origin !== new URL(env.PUBLIC_ORIGIN).origin)) {
+      return json({ error: 'Invalid origin' }, 400)
+    }
     if (path === '/api/public/snapshot') {
       if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405)
       try {
