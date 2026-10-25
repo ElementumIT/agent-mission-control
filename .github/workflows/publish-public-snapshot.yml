@@ -1,0 +1,33 @@
+name: Publish public aggregate snapshot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Collect and validate snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_READ_TOKEN }}
+          PRIVATE_SOURCE_REPOSITORY: ElementumIT/el-ai-agent-workspace
+          PRIVATE_SOURCE_BRANCH: main
+        run: npm run collect:snapshot > snapshot.json
+      - name: Publish validated snapshot to dedicated KV
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_KV_WRITE_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_PUBLIC_SNAPSHOT_KV_NAMESPACE_ID }}
+        run: npx --yes wrangler@latest kv key put current --namespace-id "$CLOUDFLARE_KV_NAMESPACE_ID" --remote --path snapshot.json
