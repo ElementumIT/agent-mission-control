@@ -24,7 +24,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PRIVATE_GITHUB_READ_TOKEN }}
           PRIVATE_SOURCE_REPOSITORY: ElementumIT/el-ai-agent-workspace
           PRIVATE_SOURCE_BRANCH: main
-        run: npm run collect:snapshot > snapshot.json
+        run: node --experimental-strip-types scripts/collect-public-snapshot.mjs > snapshot.json
       - name: Publish validated snapshot to dedicated KV
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_KV_WRITE_TOKEN }}
